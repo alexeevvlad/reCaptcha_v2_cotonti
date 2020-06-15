@@ -21,13 +21,21 @@ function recaptcha_generate()
     {
      $html = '<script src="https://www.google.com/recaptcha/api.js"></script>';
      $html .= '<div class="g-recaptcha" data-sitekey="'.$cfg['plugin']['recaptcha']['sitekey'].'"></div>';
+     $html .= '<input type="hidden" name="capman" value="recaptcha" />';
+     
      return $html;
     }
+}
+
+function recaptcha_validate() {
+    $response = cot_import('g-recaptcha-response', 'P', 'TXT');
+    return cot_recaptcha_valid($response);
 }
 
 function cot_recaptcha_valid($response) 
 {
     global $cfg;
+    if(empty($response)) return false;
     try {
 
         $url = 'https://www.google.com/recaptcha/api/siteverify';
@@ -48,7 +56,7 @@ function cot_recaptcha_valid($response)
         return json_decode($result)->success;
     }
     catch (Exception $e) {
-        return null;
+        return false;
     }
 }
 ?>
